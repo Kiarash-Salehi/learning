@@ -31,3 +31,9 @@ Properties can be placed on relationships as well.
 In neo4j all relationships must have a direction, but the relationship can be queried in either direction or ignored completely at query time.
 
 All relationships in neo4j must have a type and a direction.
+
+## Lesson2: Native Graph Advantage
+
+- Index free Adjacency
+
+## Lesson3: Non-graph Databases to Graph
