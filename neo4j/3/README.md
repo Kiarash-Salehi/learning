@@ -106,13 +106,3 @@ Modify the query to return the role property of the `ACTED_IN` relationship.
 Neo4j provides Docker images for both the Community and Enterprise editions.
 
 The [Neo4j Docker documentation](https://neo4j.com/docs/operations-manual/current/docker/) provides instructions on how to run, configure, and deploy Neo4j in a Docker container.
-
-## Course Summary
-
-- Basic graph theory and the elements that make a graph
-- Graph structures
-- Common graph use cases
-- Elements of a Neo4j graph database
-- How Neo4j implements index-free-adjacency
-- How to navigate a graph database
-- How to get started with Neo4j
