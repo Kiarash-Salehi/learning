@@ -123,7 +123,7 @@ As you gain more experience with Cypher, you will find that using `WHERE` to fil
 
 This query returns two names and their associated birth years.
 
-# Finding Relationships
+## Finding Relationships
 
 In the previous lesson, we used the `MATCH` clause to find the node in our database that represented _Tom Hanks_.
 
@@ -144,7 +144,7 @@ We can extend the pattern in the `MATCH` clause to traverse through all relation
 
 Our data model dictates that the node at the other end of that relationship will be _Movie_ node, so we don’t necessarily need to specify the _:Movie_ label in the node - instead we will use the variable _m_.
 
-> Cypher: Incomplete code
+> Cypher:
 >
 > ```
 > MATCH (p:Person {name: 'Tom Hanks'})-[:ACTED_IN]->(m)
@@ -155,7 +155,7 @@ This code returns the titles of all movies that _Tom Hanks_ acted in.
 
 If our graph had different labels, for example _Television_ and _Movie_ nodes this query would have returned all _Television_ and _Movie_ nodes that Tom Hanks acted in. That is, if we had multiple types of nodes at the end of the _ACTED_IN_ relationships in our graph, we could make sure that we only return movies.
 
-> Cypher: Incomplete code
+> Cypher:
 >
 > ```
 > MATCH (p:Person {name: 'Tom Hanks'})-[:ACTED_IN]->(m:Movie)
@@ -163,3 +163,156 @@ If our graph had different labels, for example _Television_ and _Movie_ nodes th
 > ```
 
 Because our graph only has _Movie_ nodes that have incoming _ACTED_IN_ relationships, this query returns the exact same results as the previous query.
+
+## Filtering queries
+
+this query retrieves the _Person_ nodes and _Movie_ nodes where the person acted in a movie that was released in _2008_ or _2009_:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+> WHERE m.released = 2008 OR m.released = 2009
+> RETURN p, m
+> ```
+
+### Filtering by node labels
+
+Returning the names of all people who acted in the movie, _The Matrix_.
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+> WHERE m.title='The Matrix'
+> RETURN p.name
+> ```
+
+An alternative to this query is the following where we test the node labels in the `WHERE` clause:
+
+> Cypher:
+>
+> ```
+> MATCH (p)-[:ACTED_IN]->(m)
+> WHERE p:Person AND m:Movie AND m.title='The Matrix'
+> RETURN p.name
+> ```
+
+Both queries execute the same way, but you may want to use one style of filtering over another in your code.
+
+### Filtering using ranges
+
+You can specify a range for filtering a query. Here we want to retrieve Person nodes of people who acted in movies released between _2000_ and _2003_:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+> WHERE 2000 <= m.released <= 2003
+> RETURN p.name, m.title, m.released
+> ```
+
+### Filtering by existence of a property
+
+Recall that by default, there is no requirement that a node or relationship has a given property. Here is an example of a query where we only want to return _Movie_ nodes where Jack _Nicholson_ acted in the movie, and the movie has the _tagline_ property.
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+> WHERE p.name='Jack Nicholson' AND m.tagline IS NOT NULL
+> RETURN m.title, m.tagline
+> ```
+
+### Filtering by partial strings
+
+Cypher has a set of string-related keywords that you can use in your `WHERE` clauses to test string property values. You can specify `STARTS WITH`, `ENDS WITH`, and `CONTAINS`.
+
+For example, to find all actors in the graph whose first name is _Michael_, you would write:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->()
+> WHERE p.name STARTS WITH 'Michael'
+> RETURN p.name
+> ```
+
+String tests are case-sensitive so you may need to use the `toLower()` or `toUpper()` functions to ensure the test yields the correct results. For example:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:ACTED_IN]->()
+> WHERE toLower(p.name) STARTS WITH 'michael'
+> RETURN p.name
+> ```
+
+### Filtering by patterns in the graph
+
+Suppose you wanted to find all people who wrote a movie but did not direct that same movie. Here is how you would perform the query:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[:WROTE]->(m:Movie)
+> WHERE NOT exists( (p)-[:DIRECTED]->(m) )
+> RETURN p.name, m.title
+> ```
+
+### Filtering using lists
+
+If you have a set of values you want to test with, you can place them in a list or you can test with an existing list in the graph. A Cypher list is a comma-separated set of values within square brackets.
+
+You can define the list in the `WHERE` clause. During the query, the graph engine will compare each property with the values `IN` the list. You can place either numeric or string values in the list, but typically, elements of the list are of the same type of data. If you are testing with a property of a string type, then all the elements of the list will be strings.
+
+In this example, we only want to retrieve _Person_ nodes of people born in _1965_, _1970_, or _1975_:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)
+> WHERE p.born IN [1965, 1970, 1975]
+> RETURN p.name, p.born
+> ```
+
+You can also compare a value to an existing list in the graph.
+
+We know that the _:ACTED_IN_ relationship has a property, _roles_ that contains the list of roles an actor had in a particular movie they acted in. Here is the query we write to return the name of the actor who played _Neo_ in the movie _The Matrix_:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+> WHERE  'Neo' IN r.roles AND m.title='The Matrix'
+> RETURN p.name, r.roles
+> ```
+
+### What properties does a node or relationship have?
+
+The properties for a node with a given label need not be the same. One way you can discover the properties for a node is to use the `keys()` function. This function returns a list of all property keys for a node.
+
+Discover the keys for the Person nodes in the graph by running this code:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)
+> RETURN p.name, keys(p)
+> ```
+
+The results returned for each row include the name of the person, followed by the list of property keys for that node. If you scroll down in the result pane, you will notice that some Person nodes do not have a born property.
+
+### What properties exist in the graph?
+
+More generally, you can run this code to return all the property keys defined in the graph.
+
+> Cypher:
+>
+> ```
+> CALL db.propertyKeys()
+> ```
+
+> [!NOTE]
+>
+> that a property key remains in the graph, once it has been defined, even if there are currently no nodes or relationships that use that property key.
