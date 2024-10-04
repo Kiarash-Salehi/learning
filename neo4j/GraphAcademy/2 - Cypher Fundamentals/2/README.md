@@ -143,3 +143,93 @@ This code successfully creates the nodes and relationship:
 > ```
 
 You can execute this Cypher code multiple times and it will not create any new nodes or relationships.
+
+## Updating properties
+
+### Adding properties for a node or relationship
+
+There are two ways that you can set a property for a node or relationship.
+
+#### 1. Inline as part of the MERGE clause
+
+You have already seen how to create the primary key property for a node. You can also set a property for a relationship inline as follows:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person {name: 'Michael Caine'})
+> MERGE (m:Movie {title: 'Batman Begins'})
+> MERGE (p)-[:ACTED_IN {roles: ['Alfred Penny']}]->(m)
+> RETURN p,m
+> ```
+
+In this code, the actor, _Michael Caine_ exists but the movie, _Batman Begins_ does not. We find the _Person_ node and we create the _Movie_ node. Then, we create the _ACTED_IN_ relationship between the _Michael Caine_ node and the newly-created _Batman Begins_ node. And we set the roles property for this relationship to an array of values - containing one value, _Alfred Penny_. Notice that for inline property setting, we use the JSON-style of adding the property key/value pairs in braces `{ .. }`, just like we did when we specified the property for the node.
+
+#### 2. Using the SET keyword for a reference to a node or relationship
+
+We also have the option to use the `SET` keyword for setting a property value. In the context of particular `MERGE` or `MATCH` clause where you have defined a variable to reference the node or relationship, you can set property values.
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+> WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
+> SET r.roles = ['Alfred Penny']
+> RETURN p, r, m
+> ```
+
+##### Setting multiple properties
+
+If you need to set multiple properties, you separate them with a comma (,). For example:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+> WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
+> SET r.roles = ['Alfred Penny'], m.released = 2008
+> RETURN p, r, m
+> ```
+
+### Updating properties
+
+If you have a reference to a node or relationship, you can also use SET to modify the property. For example, if we wanted to modify Michael Caine’s role to be something different, we could do the following:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+> WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
+> SET r.roles = ['Mr. Alfred Penny']
+> RETURN p, r, m
+> ```
+
+### Removing properties
+
+You can remove or delete a property from a node or relationship by using the `REMOVE` keyword, or setting the property to `null`.
+
+Here we remove the roles property of this relationship:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+> WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
+> REMOVE r.roles
+> RETURN p, r, m
+> ```
+
+Here we remove the born property from an actor:
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person)
+> WHERE p.name = 'Gene Hackman'
+> SET p.born = null
+> RETURN p
+> ```
+
+> [!CAUTION]
+>
+> You should never remove the property that is used as the primary key for a node.
