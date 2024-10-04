@@ -122,3 +122,44 @@ As you gain more experience with Cypher, you will find that using `WHERE` to fil
 > ```
 
 This query returns two names and their associated birth years.
+
+# Finding Relationships
+
+In the previous lesson, we used the `MATCH` clause to find the node in our database that represented _Tom Hanks_.
+
+> Cypher:
+>
+> ```
+> MATCH (p:Person {name: 'Tom Hanks'})
+> RETURN p
+> ```
+
+We can extend the pattern in the `MATCH` clause to traverse through all relationships with a type of _ACTED_IN_ to any node. Our domain model shows that the _ACTED_IN_ relationship goes in an outgoing direction from the _Person_ node so we can add the direction in our pattern. We often refer to this as a **traversal**.
+
+> Cypher: Incomplete code
+>
+> ```
+> MATCH (p:Person {name: 'Tom Hanks'})-[:ACTED_IN]->()
+> ```
+
+Our data model dictates that the node at the other end of that relationship will be _Movie_ node, so we don’t necessarily need to specify the _:Movie_ label in the node - instead we will use the variable _m_.
+
+> Cypher: Incomplete code
+>
+> ```
+> MATCH (p:Person {name: 'Tom Hanks'})-[:ACTED_IN]->(m)
+> RETURN m.title
+> ```
+
+This code returns the titles of all movies that _Tom Hanks_ acted in.
+
+If our graph had different labels, for example _Television_ and _Movie_ nodes this query would have returned all _Television_ and _Movie_ nodes that Tom Hanks acted in. That is, if we had multiple types of nodes at the end of the _ACTED_IN_ relationships in our graph, we could make sure that we only return movies.
+
+> Cypher: Incomplete code
+>
+> ```
+> MATCH (p:Person {name: 'Tom Hanks'})-[:ACTED_IN]->(m:Movie)
+> RETURN m.title
+> ```
+
+Because our graph only has _Movie_ nodes that have incoming _ACTED_IN_ relationships, this query returns the exact same results as the previous query.
