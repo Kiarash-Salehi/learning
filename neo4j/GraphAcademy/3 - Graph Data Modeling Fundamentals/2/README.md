@@ -1,0 +1,8 @@
+# Modeling Nodes
+
+## Module Overview
+
+In this module, you will learn about:
+
+- Identifying the entities from your use cases.
+- Creating nodes in the graph in support of the data model.
