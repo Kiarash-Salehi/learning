@@ -305,3 +305,118 @@ Here is what happens in the query processor:
 5. If there is no node for the Movie, it creates the node.
 
 6. If there is no relationship between the two nodes, it then creates the ACTED_IN relationship between them.
+
+## Deleting Data
+
+In a Neo4j database you can delete:
+
+- nodes
+- relationships
+- properties
+- labels
+
+To delete any data in the database, you must first retrieve it, then you can delete it. You have already learned how to remove or delete properties from nodes or relationships.
+
+### Deleting a node
+
+You delete a node as follows where you first retrieve the node. Then with a reference to the node you can delete it.
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person)
+> WHERE p.name = 'Jane Doe'
+> DELETE p
+> ```
+
+### Deleting a relationship
+
+To remove the relationship we retrieve the relationship and delete it.
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person {name: 'Jane Doe'})-[r:ACTED_IN]->(m:Movie {title: 'The Matrix'})
+> DELETE r
+> RETURN p, m
+> ```
+
+> [!WARNING]
+> If we attempt to delete a node with a relationship, we will receive an error!
+>
+> Neo4j prevents orphaned relationships in the graph.
+
+### Deleting a node and its relationships
+
+Neo4j provides a feature where you cannot delete a node if it has incoming or outgoing relationships. This prevents the graph from having orphaned relationships.
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person {name: 'Jane Doe'})
+> DETACH DELETE p
+> ```
+
+This code deletes the relationship and the _Person_ node.
+
+> [!WARNING]
+> You should only do this on relatively small databases as trying to do this on a large database will exhaust memory.
+
+### Deleting labels
+
+A best practice is to have at least one label for a node.
+
+run this code to add a new label to this node:
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person {name: 'Jane Doe'})
+> SET p:Developer
+> RETURN p
+> ```
+
+To remove the newly-added label, Developer, you use the `REMOVE` clause. Run this code:
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person {name: 'Jane Doe'})
+> REMOVE p:Developer
+> RETURN p
+> ```
+
+> [!NOTE]
+> You could have specified `MATCH (p:Developer {name: 'Jane Doe'})` or `MATCH (p:Person:Developer {name: 'Jane Doe'})` to find the same node
+
+Delete the Jane Doe node by running this code:
+
+> Cypher:
+>
+> ```cypher
+> MATCH (p:Person {name: 'Jane Doe'})
+> DETACH DELETE p
+> ```
+
+> [!NOTE]
+> Note that `DELETE p` would also work in this case since we have not created any relationships.
+
+### What labels exist in the graph?
+
+This code returns all node labels defined in the graph.
+
+> Cypher:
+>
+> ```cypher
+> CALL db.labels()
+> ```
+
+## Course Summary
+
+In this course, you have learned how to:
+
+- Write Cypher code to query the database.
+
+- Write Cypher code to modify the database.
+
+- Use some Cypher statement best practices.
