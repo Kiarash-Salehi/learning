@@ -26,7 +26,7 @@ Suppose we want to create a node to represent _Michael Caine_. Run this Cypher c
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MERGE (p:Person {name: 'Michael Caine'})
 > ```
 
@@ -36,7 +36,7 @@ Verify that the node was created.
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Michael Caine'})
 > RETURN p
 > ```
@@ -47,7 +47,7 @@ We can also chain multiple `MERGE` clauses together within a single Cypher code 
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MERGE (p:Person {name: 'Katie Holmes'})
 > MERGE (m:Movie {title: 'The Dark Knight'})
 > RETURN p, m
@@ -70,7 +70,7 @@ For example, if the Person and Movie nodes both already exist, we can find them 
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Michael Caine'})
 > MATCH (m:Movie {title: 'The Dark Knight'})
 > MERGE (p)-[:ACTED_IN]->(m)
@@ -82,7 +82,7 @@ We can confirm that this relationship exists as follows:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Michael Caine'})-[:ACTED_IN]-(m:Movie {title: 'The Dark Knight'})
 > RETURN p, m
 > ```
@@ -95,7 +95,7 @@ For example, if we specified this relationship pattern:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Michael Caine'})<-[:ACTED_IN]-(m:Movie {title: 'The Dark Knight'})
 > RETURN p, m
 > ```
@@ -108,7 +108,7 @@ We can also chain multiple `MERGE` clauses together within a single Cypher code 
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MERGE (p:Person {name: 'Chadwick Boseman'})
 > MERGE (m:Movie {title: 'Black Panther'})
 > MERGE (p)-[:ACTED_IN]-(m)
@@ -124,7 +124,7 @@ We can confirm that this relationship exists as follows:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Chadwick Boseman'})-[:ACTED_IN]-(m:Movie {title: 'Black Panther'})
 > RETURN p, m
 > ```
@@ -137,14 +137,14 @@ This code successfully creates the nodes and relationship:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MERGE (p:Person {name: 'Emily Blunt'})-[:ACTED_IN]->(m:Movie {title: 'A Quiet Place'})
 > RETURN p, m
 > ```
 
 You can execute this Cypher code multiple times and it will not create any new nodes or relationships.
 
-## Updating properties
+## Updating Properties Section
 
 ### Adding properties for a node or relationship
 
@@ -156,7 +156,7 @@ You have already seen how to create the primary key property for a node. You can
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person {name: 'Michael Caine'})
 > MERGE (m:Movie {title: 'Batman Begins'})
 > MERGE (p)-[:ACTED_IN {roles: ['Alfred Penny']}]->(m)
@@ -171,7 +171,7 @@ We also have the option to use the `SET` keyword for setting a property value. I
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
 > WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
 > SET r.roles = ['Alfred Penny']
@@ -184,7 +184,7 @@ If you need to set multiple properties, you separate them with a comma (,). For 
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
 > WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
 > SET r.roles = ['Alfred Penny'], m.released = 2008
@@ -197,7 +197,7 @@ If you have a reference to a node or relationship, you can also use SET to modif
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
 > WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
 > SET r.roles = ['Mr. Alfred Penny']
@@ -212,7 +212,7 @@ Here we remove the roles property of this relationship:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
 > WHERE p.name = 'Michael Caine' AND m.title = 'The Dark Knight'
 > REMOVE r.roles
@@ -223,7 +223,7 @@ Here we remove the born property from an actor:
 
 > Cypher:
 >
-> ```
+> ```cypher
 > MATCH (p:Person)
 > WHERE p.name = 'Gene Hackman'
 > SET p.born = null
@@ -233,3 +233,75 @@ Here we remove the born property from an actor:
 > [!CAUTION]
 >
 > You should never remove the property that is used as the primary key for a node.
+
+## Merge Processing
+
+You can use `MERGE` to create nodes and relationships in the graph. `MERGE` operations work by first trying to find a pattern in the graph. If the pattern is found then the data already exists and is not created. If the pattern is not found, then the data can be created.
+
+### Customizing MERGE behavior
+
+You can also specify behavior at runtime that enables you to set properties when the node is created or when the node is found. We can use the `ON CREATE SET` or `ON MATCH SET` conditions, or the `SET` keywords to set any additional properties.
+
+> Cypher:
+>
+> ```cypher
+> // Find or create a person with this name
+> MERGE (p:Person {name: 'McKenna Grace'})
+>
+> // Only set the `createdAt` property if the node is created during this query
+> ON CREATE SET p.createdAt = datetime()
+>
+> // Only set the `updatedAt` property if the node was created previously
+> ON MATCH SET p.updatedAt = datetime()
+>
+> // Set the `born` property regardless
+> SET p.born = 2006
+>
+> RETURN p
+> ```
+
+If you want to set multiple properties for an ON CREATE SET or ON MATCH SET clause, you separate them by commas. For example:
+
+```cypher
+ON CREATE SET m.released = 2020, m.tagline = `A great ride!'
+```
+
+### Merging with relationships
+
+You can use `MERGE` to create nodes or relationships:
+
+> Cypher:
+>
+> ```cypher
+> // Find or create a person with this name
+> MERGE (p:Person {name: 'Michael Caine'})
+>
+> // Find or create a movie with this title
+> MERGE (m:Movie {title: 'The Cider House Rules'})
+>
+> // Find or create a relationship between the two nodes
+> MERGE (p)-[:ACTED_IN]->(m)
+> ```
+
+Another way your can create these nodes and relationship is as follows:
+
+> Cypher:
+>
+> ```cypher
+> MERGE (p:Person {name: 'Michael Caine'})-[:ACTED_IN]->(m:Movie {title: 'The Cider House Rules'})
+> RETURN p, m
+> ```
+
+Here is what happens in the query processor:
+
+1. Neo4j will attempt to find a Person node with the name Michael Caine.
+
+2. If it does not exist, it creates the node.
+
+3. Then, it will attempt to expand the ACTED_IN relationships in the graph for this node.
+
+4. If there are any ACTED_IN relationships from this node, it looks for a Movie with the title 'The Cider House Rules'.
+
+5. If there is no node for the Movie, it creates the node.
+
+6. If there is no relationship between the two nodes, it then creates the ACTED_IN relationship between them.
