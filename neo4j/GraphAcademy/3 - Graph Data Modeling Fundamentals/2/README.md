@@ -90,3 +90,24 @@ Here is the initial data model:
 And here is the initial instance model you will be creating:
 
 ![initial instance model](./img/3.png)
+
+## Identifying a New Label
+
+> We need to refactor the model for a new use case:
+>
+> Use case #4: How many users rated a movie?
+
+We have already identified the Person and Movie nodes for our use cases:
+
+- What **people** acted in a **movie**?
+- What **person** directed a **movie**?
+- What **movies** did a **person** act in?
+
+Here is our current graph data model:
+
+![current graph data model](./img/2.png)
+
+We have an additional use case that we must model for. We need to be able to differentiate rating website users from other types of people who are actors and directors.
+
+> [!NOTE]
+> As you go through this course, you can use any technique you want to for drawing out the graph data model. Most people just use pen and paper.
