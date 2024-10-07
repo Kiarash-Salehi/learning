@@ -43,3 +43,42 @@ Here are the steps to create a graph data model:
 Graph data modeling is an iterative process. Your initial graph data model is a starting point, but as you learn more about the use cases or if the use cases change, the initial graph data model will need to change. In addition, you may find that especially when the graph scales, you will need to modify the graph **(refactor)** to achieve the best performance for your key use cases.
 
 Refactoring is **very common** in the development process. A Neo4j graph has an optional schema which is quite flexible, unlike the schema in an RDBMS. A Cypher developer can easily modify the graph to represent an improved data model.
+
+## The Domain
+
+### Understanding the domain for your application
+
+Before you begin the data modeling process you must:
+
+- Identify the stakeholders and developers of the application.
+- With the stakeholders and developers:
+  - Describe the application in detail.
+  - Identify the users of the application (people, systems).
+  - Agree upon the use cases for the application.
+  - Rank the importance of the use cases.
+
+### Movie domain
+
+In the course, Neo4j Fundamentals, you were introduced to a "starter" movie graph.
+
+The domain includes movies, people who acted or directed movies, and users who rated movies. What makes this domain interesting are the connections or relationships between nodes in the graph.
+
+### Use cases
+
+Most use cases for an application can be enumerated by a comprehensive list of questions. The use cases help to define how the application will behave at runtime.
+
+Here are the use cases you will be working with to develop the initial graph data model:
+
+Here are the use cases you will be working with to develop the initial graph data model:
+
+- What people acted in a movie?
+- What person directed a movie?
+- What movies did a person act in?
+- How many users rated a movie?
+- Who was the youngest person to act in a movie?
+- What role did a person play in a movie?
+- What is the highest rated movie in a particular year according to imDB?
+- What drama movies did an actor act in?
+- What users gave a movie a rating of 5?
+
+In our domain, we want to differentiate a person who acted in or directed a movie and a user or reviewer who rated a movie. We have much more information about people such as their birth date, their tmdbId etc. Users who rated movies will just be named or identified.
