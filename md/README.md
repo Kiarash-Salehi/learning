@@ -1,3 +1,7 @@
+# Useful MD Formats
+
+## Window Section
+
 > [!NOTE]
 > Highlights information that users should take into account, even when skimming.
 
@@ -12,3 +16,9 @@
 
 > [!CAUTION]
 > Negative potential consequences of an action.
+
+## Table
+
+| headline 1 | headline 2 |
+| ---------- | ---------- |
+| content 1  | content 2  |
