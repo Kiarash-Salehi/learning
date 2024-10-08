@@ -1,0 +1,8 @@
+# Refactoring the Graph
+
+## Module Overview
+
+In this module, you will learn about:
+
+- Why we refactor a graph data model and graph.
+- Adding labels to the data model.
