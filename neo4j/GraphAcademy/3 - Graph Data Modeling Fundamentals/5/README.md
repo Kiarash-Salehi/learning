@@ -140,3 +140,71 @@ With Cypher, you can easily transform the graph. With this code, that you will e
 > WHERE exists ((p)-[:ACTED_IN]-())
 > SET p:Actor
 > ```
+
+## Retesting After Refactoring
+
+After you have refactored the graph, you should revisit all queries for your use cases.
+
+You should first determine if any of the queries need to be rewritten to take advantage of the refactoring.
+
+Next, we rewrite some of our queries to take advantage of the refactoring.
+
+During your testing on your real application and especially with a fully-scaled graph, you can also profile the new queries to see if it improves performance. On the small instance model we are using, you will not see significant improvements, but you may see differences in the number of rows retrieved.
+
+### Use case #1: What people acted in a movie?
+
+We rewrite this query to use the _Actor_ label.
+
+Original code:
+
+> Cypher
+>
+> ```cypher
+> MATCH (p:Person)-[:ACTED_IN]-(m:Movie)
+> WHERE m.title = 'Sleepless in Seattle'
+> RETURN p.name AS Actor
+> ```
+
+New code:
+
+> Cypher
+>
+> ```cypher
+> MATCH (p:Actor)-[:ACTED_IN]-(m:Movie)
+> WHERE m.title = 'Sleepless in Seattle'
+> RETURN p.name AS Actor
+> ```
+
+### Profiling Queries
+
+For the query that uses the Person label we see this result that first retrieves the 5 Person nodes.
+
+For the query that uses the Actor label we see this result that first retrieves the 4 Actor nodes, a slight improvement for this small graph.
+
+### Use case #3: What movies did a person act in?
+
+We rewrite this query to use the _Actor_ label.
+
+Original code:
+
+> Cypher
+>
+> ```cypher
+> MATCH (p:Actor)-[:ACTED_IN]-(m:Movie)
+> WHERE m.title = 'Sleepless in Seattle'
+> RETURN p.name AS Actor
+> ```
+
+New code:
+
+> Cypher
+>
+> ```cypher
+> MATCH (p:Actor)-[:ACTED_IN]-(m:Movie)
+> WHERE p.name = 'Tom Hanks'
+> RETURN m.title AS Movie
+> ```
+
+### Profile queries
+
+If you have a scaled graph (with more nodes/relationships than what we have been using in this course), you should also use the `PROFILE` keyword to compare the performance of the queries after the refactoring.
