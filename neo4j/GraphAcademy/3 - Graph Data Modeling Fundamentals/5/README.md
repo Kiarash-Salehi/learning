@@ -208,3 +208,13 @@ New code:
 ### Profile queries
 
 If you have a scaled graph (with more nodes/relationships than what we have been using in this course), you should also use the `PROFILE` keyword to compare the performance of the queries after the refactoring.
+
+## Avoid These Labels
+
+### Semantically orthogonal labels
+
+“Semantically orthogonal” is a fancy term that means that labels should have nothing to do with one another. You should be careful not to use the same type of label in different contexts. For example, using the region for all types of nodes is not useful for most queries.
+
+### Representing class hierarchies
+
+You also want to avoid labeling your nodes to represent hierarchies.
