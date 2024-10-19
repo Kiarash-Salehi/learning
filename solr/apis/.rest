@@ -1,0 +1,51 @@
+POST http://localhost:8983/solr/techproducts/update?commit=true
+Content-Type: application/json
+
+{
+  "add": [
+    {
+      "id": 1,
+      "test": "test"
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8983/solr/techproducts/update?commit=true
+Content-Type: application/json
+
+{
+  "add": [
+    {
+      "id": 2,
+      "test": {"set": "testing test 2"}
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8983/solr/techproducts/update?commit=true
+Content-Type: application/json
+
+{
+  "delete": [
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+
+###
+
+GET http://localhost:8983/solr/techproducts/select?q=

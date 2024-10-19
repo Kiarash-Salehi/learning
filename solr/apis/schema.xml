@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema name="default-config" version="1.6">
+  <types></types>
+  <fields>
+    <field name="id" indexed="true" stored="true" multiValue="false"></field>
+    <field name="text" indexed="true" stored="true"></field>
+  </fields>
+  <uniqueKey>id</uniqueKey>
+  <copyField></copyField>
+  <fieldType></fieldType>
+</schema>
